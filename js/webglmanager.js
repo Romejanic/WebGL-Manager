@@ -1,13 +1,20 @@
 var webgl = {}
+webgl.settings = {}
+
+webgl.settings.canvasID = "webgl-canvas";
 
 webgl.activeContext = null;
 
 webgl.createContext = function() {
-	var canvas = document.getElementById("webgl-canvas");
+	var canvas = document.getElementById(webgl.settings.canvasID);
 	if(!canvas) {
 		// If there is no canvas with the id, just use the first canvas in the DOM
 		canvas = document.querySelector("canvas");
-		console.warn("Canvas with ID webgl-canvas not found, using " + canvas);
+		if(!canvas) {
+			console.error("WebGL compatible canvas cannot be found in DOM! Add one!");
+			return null;
+		}
+		console.warn("Canvas with ID " + webgl.settings.canvasID + " not found, using " + canvas);
 	}
 	var version = canvas.getAttribute("webgl-version");
 	var contextName = "webgl";
@@ -22,7 +29,7 @@ webgl.createContext = function() {
 		}
 	}
 	if(!gl) {
-		console.error("WebGL context (" + contextName + ") not found!");
+		console.error("WebGL context (" + contextName + ") not found! Your browser may not be compatible!");
 		return null;
 	}
 	webgl.activeContext = gl;
