@@ -1,9 +1,9 @@
 var webgl = {}
+webgl.activeContexts = [];
+webgl.primaryContext = null;
 webgl.settings = {}
 
 webgl.settings.canvasID = "webgl-canvas";
-
-webgl.activeContext = null;
 
 webgl.createContext = function() {
 	var canvas = document.getElementById(webgl.settings.canvasID);
@@ -21,17 +21,24 @@ webgl.createContext = function() {
 	if(version && version === "2") {
 		contextName = "webgl2";
 	}
-	var gl = canvas.getContext(contextName);
-	if(!gl) {
-		gl = canvas.getContext("experimental-" + contextName);
-		if(gl) {
+	var ctx = canvas.getContext(contextName);
+	if(!ctx) {
+		ctx = canvas.getContext("experimental-" + contextName);
+		if(ctx) {
 			console.warn("Core WebGL context couldn't be found, falling back on experimental...");
 		}
 	}
-	if(!gl) {
+	if(!ctx) {
 		console.error("WebGL context (" + contextName + ") not found! Your browser may not be compatible!");
 		return null;
 	}
-	webgl.activeContext = gl;
-	return gl;
+	// Declare new functions in context and add it to list
+	if(ctx) {
+		ctx.isWebGL2 = contextName === "webgl2";
+		ctx.makePrimary = function(){
+			webgl.primaryContext = this;
+		};
+		webgl.activeContexts.push(ctx);
+	}
+	return ctx;
 };
