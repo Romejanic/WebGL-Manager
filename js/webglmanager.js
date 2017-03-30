@@ -1,11 +1,12 @@
-var webgl = {}
-webgl.activeContexts = [];
-webgl.primaryContext = null;
-webgl.settings = {}
-
-webgl.settings.canvasID = "webgl-canvas";
-webgl.settings.openLinksInNewTab = true;
-webgl.settings.showCanvasErrorAlerts = true;
+var webgl = {
+	activeContexts: [],
+	primaryContext: null,
+	settings: {
+		canvasID: "webgl-canvas",
+		openLinksInNewTab: true,
+		showCanvasErrorAlerts: true
+	}
+};
 
 webgl.openLink = function(url){
 	window.open(url, this.settings.openLinksInNewTab ? "_blank" : "_self");
