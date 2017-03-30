@@ -4,6 +4,12 @@ webgl.primaryContext = null;
 webgl.settings = {}
 
 webgl.settings.canvasID = "webgl-canvas";
+webgl.settings.openLinksInNewTab = true;
+webgl.settings.showCanvasErrorAlerts = true;
+
+webgl.openLink = function(url){
+	window.open(url, this.settings.openLinksInNewTab ? "_blank" : "_self");
+};
 
 webgl.createContext = function() {
 	var canvas = document.getElementById(webgl.settings.canvasID);
@@ -30,14 +36,22 @@ webgl.createContext = function() {
 	}
 	if(!ctx) {
 		console.error("WebGL context (" + contextName + ") not found! Your browser may not be compatible!");
+		if(webgl.settings.showCanvasErrorAlerts) {
+			if(confirm("WebGL Manager: The WebGL context could not be created!\n\nYour browser may be incompatible with WebGL.\nWould you like to install it now?")) {
+				webgl.openLink("http://get.webgl.org/");
+			}
+		}
 		return null;
 	}
 	// Declare new functions in context and add it to list
 	if(ctx) {
-		ctx.isWebGL2 = contextName === "webgl2";
+		ctx.isWebGL2 = version && version === "2";
 		ctx.makePrimary = function(){
 			webgl.primaryContext = this;
 		};
+		if(!webgl.primaryContext) {
+			ctx.makePrimary();
+		}
 		webgl.activeContexts.push(ctx);
 	}
 	return ctx;
